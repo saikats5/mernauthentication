@@ -1,4 +1,5 @@
 import { User } from '../models/userModel.js';
+import bcypt from 'bcryptjs';
 
 export const registerUser = async (req, res) => {
 	try {
@@ -11,7 +12,8 @@ export const registerUser = async (req, res) => {
 		if (existingUser) {
 			return res.status(400).json({ success: false, message: "User already exists" });
 		}
-		const newUser = await User.create({ username, email, password });
+		const hashedPassword = await bcypt.hash(password, 10);
+		const newUser = await User.create({ username, email, password: hashedPassword });
 		return res.status(201).json({ success: true, message: "User registered successfully", data: newUser });
 	} catch (error) {
 		console.error("Error in registerUser:", error.message);
